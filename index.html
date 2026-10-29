@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📊 Squeeze Theorem - رياضيات 12 متقدم بريدج | Mr. Mohammed Hesham</title>
+<meta name="description" content="امتحان تفاعلي عن نظرية الشطيرة - رياضيات 12 متقدم بريدج">
+<meta name="author" content="Mr. Mohammed Hesham">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Cairo', sans-serif; background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); }
+body.en-mode { font-family: 'Inter', sans-serif; }
+.arabic-math { font-family: 'Amiri', 'Cairo', serif; }
+.correct { background-color: #dcfce7 !important; border-color: #16a34a !important; }
+.incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; }
+.timer-warning { color: #dc2626 !important; animation: pulse 1s infinite; }
+@keyframes pulse { 50% { opacity: 0.7; } }
+@media print { .no-print { display: none !important; } }
+.success-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.875rem; }
+.grade-excellent { background: #dcfce7; color: #166534; }
+.grade-good { background: #fef3c7; color: #92400e; }
+.grade-pass { background: #dbeafe; color: #1e40af; }
+.grade-fail { background: #fee2e2; color: #991b1b; }
+.lang-switch { position: fixed; top: 16px; left: 16px; z-index: 100; background: white; padding: 6px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; gap: 4px; border: 2px solid #7c3aed; }
+[dir="ltr"] .lang-switch { left: auto; right: 16px; }
+.lang-btn { padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: all 0.3s; border: none; font-size: 0.875rem; background: transparent; color: #6b7280; }
+.lang-btn.active { background: #7c3aed; color: white; box-shadow: 0 2px 6px rgba(124,58,237,0.4); }
+.shuffle-badge { display: inline-block; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; margin-right: 8px; }
+.math-display { display: inline-block; direction: ltr; font-family: 'Amiri', serif; font-size: 1.2em; padding: 2px 8px; background: #ede9fe; border-radius: 6px; margin: 2px; color: #5b21b6; font-weight: 600; }
+.save-indicator { position: fixed; bottom: 20px; left: 20px; z-index: 200; background: #10b981; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.save-indicator.show { opacity: 1; }
+.formula-box { background: #ede9fe; border: 2px solid #7c3aed; border-radius: 8px; padding: 12px; margin: 10px 0; font-family: 'Amiri', serif; direction: ltr; text-align: center; }
+.svg-graph { display: block; margin: 12px auto; background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 8px; }
+.graph-container { text-align: center; margin: 10px 0; }
+.module-badge { display: inline-block; padding: 4px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; margin-bottom: 8px; }
+.module-1 { background: #ede9fe; color: #5b21b6; }
+.module-2 { background: #dbeafe; color: #1e40af; }
+.module-3 { background: #fce7f3; color: #9f1239; }
+.module-4 { background: #ecfdf5; color: #065f46; }
+.module-5 { background: #fef3c7; color: #92400e; }
+</style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+
+<div class="lang-switch no-print">
+<button class="lang-btn active" onclick="setLanguage('ar')" id="btn-ar">عربي</button>
+<button class="lang-btn" onclick="setLanguage('en')" id="btn-en">EN</button>
+</div>
+
+<div id="saveIndicator" class="save-indicator">💾 <span data-ar="تم الحفظ" data-en="Saved">تم الحفظ</span></div>
+
+<div id="timer-container" class="max-w-5xl mx-auto mb-4 text-center no-print">
+<div class="bg-white p-4 rounded-2xl shadow-lg inline-block border-2 border-purple-100">
+<span class="text-gray-600 ml-2"> الوقت المتبقي:</span>
+<span id="timer" class="text-2xl font-bold text-purple-700 font-mono">60:00</span>
+<span class="shuffle-badge"> Squeeze Theorem - 25 سؤال</span>
+</div>
+</div>
+
+<div class="max-w-5xl mx-auto mb-6 flex flex-wrap gap-3 justify-center no-print">
+<button onclick="toggleAnswers()" class="bg-purple-700 hover:bg-purple-800 text-white px-5 py-2 rounded-xl font-medium transition shadow">👀 إظهار/إخفاء الإجابات</button>
+<button onclick="window.print()" class="bg-gray-700 hover:bg-gray-900 text-white px-5 py-2 rounded-xl font-medium transition shadow">🖨️ طباعة</button>
+<button onclick="reshuffleExam()" class="bg-gradient-to-r from-purple-700 to-indigo-600 hover:from-purple-800 hover:to-indigo-700 text-white px-5 py-2 rounded-xl font-medium transition shadow">🔄 أسئلة جديدة</button>
+<button onclick="clearProgress()" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl font-medium transition shadow">🗑️ مسح التقدم</button>
+</div>
+
+<header class="max-w-5xl mx-auto bg-white p-8 rounded-3xl shadow-2xl mb-8 border-4 border-purple-500">
+<div class="text-center">
+<div class="inline-block bg-purple-700 text-white px-6 py-2 rounded-full text-sm font-bold mb-4">MATH 12 ADVANCED BRIDGE - QUESTION 3</div>
+<h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4"> نظرية الشطيرة (Squeeze Theorem)</h1>
+<h2 class="text-xl text-purple-700 font-semibold mb-2">رياضيات 12 متقدم بريدج</h2>
+<p class="text-gray-600 mb-4">Squeeze Theorem, Example 3.8 & Exercise 31</p>
+<p class="text-sm text-green-600 font-semibold">💾 يتم حفظ تقدمك تلقائياً - 25 سؤالاً في 5 أقسام</p>
+</div>
+<div class="mt-6 flex flex-wrap justify-center gap-4 text-sm text-gray-600">
+<span>📅 التاريخ: <input type="text" id="examDate" class="border-b-2 border-purple-300 bg-transparent w-32 text-center"></span>
+<span>😊 الاسم: <input type="text" id="studentName" class="border-b-2 border-purple-300 bg-transparent w-40 text-center" placeholder="اكتب اسمك"></span>
+<span>🏫 الشعبة: <input type="text" id="studentClass" class="border-b-2 border-purple-300 bg-transparent w-32 text-center" placeholder="الشعبة"></span>
+<span> المدة: 60 دقيقة</span>
+<span>📊 المجموع: 100 درجة</span>
+</div>
+</header>
+
+<div class="max-w-5xl mx-auto mb-6 bg-white p-4 rounded-xl shadow-lg border-2 border-purple-200 no-print">
+<h3 class="font-bold text-lg mb-3 text-purple-800 text-center"> نظرية الشطيرة (Squeeze Theorem)</h3>
+<div class="grid md:grid-cols-2 gap-3 text-sm">
+<div class="formula-box"><strong>If f(x) ≤ g(x) ≤ h(x)</strong><br>and lim f(x) = lim h(x) = L<br>then lim g(x) = L</div>
+<div class="formula-box"><strong>Key bounds:</strong><br>-1 ≤ sin(θ) ≤ 1<br>-1 ≤ cos(θ) ≤ 1<br>0 ≤ sin²(θ) ≤ 1<br>0 ≤ cos²(θ) ≤ 1</div>
+</div>
+</div>
+
+<main class="max-w-5xl mx-auto space-y-8" id="exam-content"></main>
+
+<div class="text-center no-print pb-8 mt-8">
+<button onclick="gradeExam()" class="bg-gradient-to-r from-purple-700 to-indigo-600 hover:from-purple-800 hover:to-indigo-700 text-white text-lg px-12 py-4 rounded-2xl font-bold shadow-xl transition transform hover:scale-105">🎯 صحح إجاباتي!</button>
+</div>
+
+<div id="results-panel" class="max-w-5xl mx-auto mt-8 bg-white p-8 rounded-3xl shadow-2xl border-4 border-purple-500 hidden no-print">
+<h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">🏆 نتيجتك يا بطل! 🏆</h2>
+<div class="grid md:grid-cols-3 gap-4 mb-6">
+<div class="bg-purple-50 p-4 rounded-xl text-center"><p>😊 الاسم</p><p id="res-name" class="font-bold text-xl text-purple-700">-</p></div>
+<div class="bg-indigo-50 p-4 rounded-xl text-center"><p>📅 التاريخ</p><p id="res-date" class="font-bold text-xl text-indigo-700">-</p></div>
+<div class="bg-purple-50 p-4 rounded-xl text-center"><p>🌟 المجموع</p><p id="res-total" class="font-bold text-3xl text-purple-700">0 / 100</p></div>
+</div>
+<div class="text-center mb-6">
+<span id="success-badge" class="success-badge grade-excellent">-</span>
+<p id="success-percent" class="text-4xl font-bold text-purple-700 mt-2">0%</p>
+<p class="text-sm text-gray-500">نسبة النجاح</p>
+</div>
+<div class="bg-gray-50 p-6 rounded-xl mb-6">
+<h3 class="font-bold text-lg mb-4 text-gray-800">📊 أدائك في كل قسم:</h3>
+<div class="space-y-3" id="sections-performance"></div>
+</div>
+<div class="text-center">
+<button id="sendEmailBtn" onclick="sendResultsToEmail()" class="bg-gradient-to-r from-purple-700 to-indigo-600 text-white text-lg px-8 py-3 rounded-2xl font-bold shadow-xl transition"> أرسل النتيجة للمعلم</button>
+<p id="emailStatus" class="text-sm mt-2 text-center font-medium"></p>
+</div>
+</div>
+
+<footer class="max-w-5xl mx-auto mt-10 mb-8 text-center text-gray-500 text-sm no-print">
+© Squeeze Theorem - Grade 12 Advanced Bridge | Mr. Mohammed Hesham 📊
+</footer>
+
+<script>
+const PUBLIC_KEY = "Rb3Lq8tXaFmc5YHUH";
+const SERVICE_ID = "service_w15m64i";
+const TEMPLATE_ID = "template_5b0u2tq";
+const TARGET_EMAIL = "mohammedhesham872@gmail.com";
+emailjs.init(PUBLIC_KEY);
+
+const STORAGE_KEY = 'squeeze_theorem_grade12_bridge_v1';
+const TOTAL_TIME = 3600;
+const TOTAL_QUESTIONS = 25;
+const TOTAL_SECTIONS = 5;
+const QUESTIONS_PER_SECTION = 5;
+
+let currentSeed = null;
+let answersVisible = false;
+let saveIndicatorTimeout = null;
+let currentLang = 'ar';
+let timeRemaining = TOTAL_TIME;
+let timerInterval;
+let examData;
+let correctAnswersMap = {};
+let rng = null;
+
+function mulberry32(a) {
+    return function() {
+        var t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
+}
+
+function showSaveIndicator() {
+    const indicator = document.getElementById('saveIndicator');
+    indicator.classList.add('show');
+    if (saveIndicatorTimeout) clearTimeout(saveIndicatorTimeout);
+    saveIndicatorTimeout = setTimeout(() => indicator.classList.remove('show'), 1500);
+}
+
+function saveState(showIndicator = true) {
+    try {
+        const state = {
+            seed: currentSeed, lang: currentLang,
+            studentName: document.getElementById('studentName').value,
+            studentClass: document.getElementById('studentClass').value,
+            examDate: document.getElementById('examDate').value,
+            answers: getSelectedAnswers(),
+            timeRemaining: timeRemaining,
+            answersVisible: answersVisible, savedAt: Date.now()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (showIndicator) showSaveIndicator();
+    } catch (e) { console.error('Save error:', e); }
+}
+
+function loadState() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : null;
+    } catch (e) { return null; }
+}
+
+function getSelectedAnswers() {
+    const answers = {};
+    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const selected = document.querySelector('input[name="q'+i+'"]:checked');
+        if (selected) answers[i] = selected.value;
+    }
+    return answers;
+}
+
+function restoreAnswers(answers) {
+    if (!answers) return;
+    for (const [idx, val] of Object.entries(answers)) {
+        const radio = document.querySelector('input[name="q'+idx+'"][value="'+val+'"]');
+        if (radio) radio.checked = true;
+    }
+}
+
+function clearProgress() {
+    const msg = currentLang === 'ar' ? '⚠️ هل أنت متأكد من مسح كل التقدم؟' : '⚠️ Clear all progress?';
+    if (confirm(msg)) { localStorage.removeItem(STORAGE_KEY); location.reload(); }
+}
+
+function setupAnswerListeners() {
+    document.getElementById('exam-content').addEventListener('change', (e) => {
+        if (e.target.type === 'radio') saveState();
+    });
+}
+
+function setupInputListeners() {
+    ['studentName', 'studentClass', 'examDate'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', () => saveState(false));
+            el.addEventListener('blur', () => saveState());
+        }
+    });
+}
+
+// ==================== SVG DIAGRAMS ====================
+const svgGraphs = {
+    squeeze_theorem_concept: `<svg class="svg-graph" width="450" height="300" viewBox="0 0 450 300" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5" y="5" width="440" height="290" rx="12" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+        <text x="225" y="25" text-anchor="middle" font-size="14" fill="#5b21b6" font-weight="bold">📊 نظرية الشطيرة - Squeeze Theorem</text>
+        <!-- Axes -->
+        <line x1="50" y1="250" x2="420" y2="250" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="50" y1="250" x2="50" y2="40" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+        <text x="430" y="255" font-size="12" fill="#374151">x</text>
+        <text x="40" y="35" font-size="12" fill="#374151">y</text>
+        <!-- Upper bound h(x) -->
+        <path d="M 80 80 Q 225 70 370 80" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="4"/>
+        <text x="380" y="80" font-size="11" fill="#dc2626" font-weight="bold">h(x)</text>
+        <!-- Lower bound f(x) -->
+        <path d="M 80 200 Q 225 210 370 200" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="4"/>
+        <text x="380" y="205" font-size="11" fill="#2563eb" font-weight="bold">f(x)</text>
+        <!-- Middle function g(x) -->
+        <path d="M 80 140 Q 150 100 225 140 Q 300 180 370 140" fill="none" stroke="#10b981" stroke-width="3"/>
+        <text x="380" y="145" font-size="11" fill="#10b981" font-weight="bold">g(x)</text>
+        <!-- Point a -->
+        <line x1="225" y1="40" x2="225" y2="250" stroke="#7c3aed" stroke-width="1" stroke-dasharray="3"/>
+        <text x="225" y="270" text-anchor="middle" font-size="11" fill="#7c3aed" font-weight="bold">a</text>
+        <!-- Limit point L -->
+        <circle cx="225" cy="140" r="6" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+        <text x="240" y="135" font-size="11" fill="#d97706" font-weight="bold">L</text>
+        <!-- Squeeze arrows -->
+        <line x1="225" y1="80" x2="225" y2="130" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="225" y1="200" x2="225" y2="150" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+        <text x="225" y="285" text-anchor="middle" font-size="11" fill="#5b21b6" font-weight="bold">f(x) ≤ g(x) ≤ h(x) and lim f = lim h = L → lim g = L</text>
+        <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#374151"/></marker></defs>
+    </svg>`,
+    
+    example_3_8: `<svg class="svg-graph" width="450" height="320" viewBox="0 0 450 320" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5" y="5" width="440" height="310" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+        <text x="225" y="25" text-anchor="middle" font-size="14" fill="#1e40af" font-weight="bold">مثال 3.8: lim[x²cos(1/x)] = 0</text>
+        <!-- Axes -->
+        <line x1="50" y1="270" x2="420" y2="270" stroke="#374151" stroke-width="2" marker-end="url(#arrow2)"/>
+        <line x1="225" y1="270" x2="225" y2="40" stroke="#374151" stroke-width="2" marker-end="url(#arrow2)"/>
+        <text x="430" y="275" font-size="12" fill="#374151">x</text>
+        <text x="215" y="35" font-size="12" fill="#374151">y</text>
+        <text x="225" y="285" text-anchor="middle" font-size="10" fill="#374151">0</text>
+        <!-- Upper bound y = x² -->
+        <path d="M 100 250 Q 160 200 225 150 Q 290 100 350 50" fill="none" stroke="#dc2626" stroke-width="2"/>
+        <path d="M 100 250 Q 160 200 225 150" fill="none" stroke="#dc2626" stroke-width="2"/>
+        <path d="M 225 150 Q 290 200 350 250" fill="none" stroke="#dc2626" stroke-width="2"/>
+        <text x="355" y="50" font-size="11" fill="#dc2626" font-weight="bold">y = x²</text>
+        <!-- Lower bound y = -x² -->
+        <path d="M 100 290 Q 160 290 225 270 Q 290 290 350 290" fill="none" stroke="#2563eb" stroke-width="2"/>
+        <path d="M 100 250 Q 160 290 225 270 Q 290 290 350 250" fill="none" stroke="#2563eb" stroke-width="2"/>
+        <text x="355" y="295" font-size="11" fill="#2563eb" font-weight="bold">y = -x²</text>
+        <!-- Middle function x²cos(1/x) -->
+        <path d="M 100 250 Q 130 220 160 240 Q 190 200 225 220 Q 260 200 290 240 Q 320 220 350 250" fill="none" stroke="#10b981" stroke-width="2.5"/>
+        <text x="355" y="230" font-size="10" fill="#10b981" font-weight="bold">x²cos(1/x)</text>
+        <!-- Origin point -->
+        <circle cx="225" cy="270" r="5" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+        <text x="240" y="260" font-size="11" fill="#d97706" font-weight="bold">(0, 0)</text>
+        <text x="225" y="305" text-anchor="middle" font-size="11" fill="#1e40af">-x² ≤ x²cos(1/x) ≤ x²</text>
+        <text x="225" y="320" text-anchor="middle" font-size="11" fill="#1e40af">lim(-x²) = lim(x²) = 0 → lim = 0</text>
+        <defs><marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#374151"/></marker></defs>
+    </svg>`,
+    
+    exercise_31: `<svg class="svg-graph" width="450" height="320" viewBox="0 0 450 320" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5" y="5" width="440" height="310" rx="12" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/>
+        <text x="225" y="25" text-anchor="middle" font-size="14" fill="#9f1239" font-weight="bold">تمرين 31: lim[√x·cos²(1/x)] = 0</text>
+        <!-- Axes (only x > 0) -->
+        <line x1="50" y1="270" x2="420" y2="270" stroke="#374151" stroke-width="2" marker-end="url(#arrow3)"/>
+        <line x1="50" y1="270" x2="50" y2="40" stroke="#374151" stroke-width="2" marker-end="url(#arrow3)"/>
+        <text x="430" y="275" font-size="12" fill="#374151">x</text>
+        <text x="40" y="35" font-size="12" fill="#374151">y</text>
+        <text x="50" y="285" text-anchor="middle" font-size="10" fill="#374151">0</text>
+        <!-- Upper bound y = √x -->
+        <path d="M 50 270 Q 150 200 250 150 Q 350 100 420 70" fill="none" stroke="#dc2626" stroke-width="2"/>
+        <text x="420" y="60" font-size="11" fill="#dc2626" font-weight="bold">h(x) = √x</text>
+        <!-- Lower bound y = 0 (x-axis) -->
+        <line x1="50" y1="270" x2="420" y2="270" stroke="#2563eb" stroke-width="2"/>
+        <text x="420" y="285" font-size="11" fill="#2563eb" font-weight="bold">f(x) = 0</text>
+        <!-- Middle function √x·cos²(1/x) -->
+        <path d="M 50 270 Q 80 240 110 260 Q 140 220 170 240 Q 200 200 230 220 Q 260 180 290 200 Q 320 170 350 185 Q 380 160 410 175" fill="none" stroke="#10b981" stroke-width="2.5"/>
+        <text x="350" y="150" font-size="10" fill="#10b981" font-weight="bold">√x·cos²(1/x)</text>
+        <!-- Origin -->
+        <circle cx="50" cy="270" r="5" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+        <text x="70" y="260" font-size="11" fill="#d97706" font-weight="bold">(0,0)</text>
+        <text x="225" y="300" text-anchor="middle" font-size="11" fill="#9f1239">0 ≤ √x·cos²(1/x) ≤ √x</text>
+        <text x="225" y="315" text-anchor="middle" font-size="11" fill="#9f1239">lim 0 = lim √x = 0 → lim = 0</text>
+        <defs><marker id="arrow3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#374151"/></marker></defs>
+    </svg>`,
+    
+    xsin1x: `<svg class="svg-graph" width="450" height="300" viewBox="0 0 450 300" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5" y="5" width="440" height="290" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+        <text x="225" y="25" text-anchor="middle" font-size="14" fill="#065f46" font-weight="bold">lim[x·sin(1/x)] = 0</text>
+        <!-- Axes -->
+        <line x1="50" y1="250" x2="420" y2="250" stroke="#374151" stroke-width="2" marker-end="url(#arrow4)"/>
+        <line x1="225" y1="250" x2="225" y2="40" stroke="#374151" stroke-width="2" marker-end="url(#arrow4)"/>
+        <text x="430" y="255" font-size="12" fill="#374151">x</text>
+        <text x="215" y="35" font-size="12" fill="#374151">y</text>
+        <!-- Upper bound y = |x| -->
+        <line x1="50" y1="250" x2="225" y2="75" stroke="#dc2626" stroke-width="2"/>
+        <line x1="225" y1="75" x2="400" y2="250" stroke="#dc2626" stroke-width="2"/>
+        <text x="405" y="245" font-size="11" fill="#dc2626" font-weight="bold">|x|</text>
+        <!-- Lower bound y = -|x| -->
+        <line x1="50" y1="250" x2="225" y2="425" stroke="#2563eb" stroke-width="2"/>
+        <line x1="225" y1="425" x2="400" y2="250" stroke="#2563eb" stroke-width="2"/>
+        <text x="405" y="430" font-size="11" fill="#2563eb" font-weight="bold">-|x|</text>
+        <!-- Middle function x·sin(1/x) - oscillating -->
+        <path d="M 80 250 Q 100 220 120 250 Q 140 230 160 250 Q 180 240 200 250 Q 220 245 225 250 Q 230 255 250 250 Q 270 260 290 250 Q 310 270 330 250 Q 350 280 370 250 Q 390 290 410 250" fill="none" stroke="#10b981" stroke-width="2.5"/>
+        <text x="350" y="290" font-size="10" fill="#10b981" font-weight="bold">x·sin(1/x)</text>
+        <text x="225" y="280" text-anchor="middle" font-size="11" fill="#065f46">-|x| ≤ x·sin(1/x) ≤ |x|</text>
+        <defs><marker id="arrow4" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#374151"/></marker></defs>
+    </svg>`,
+    
+    bounds_explanation: `<svg class="svg-graph" width="450" height="260" viewBox="0 0 450 260" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5" y="5" width="440" height="250" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="225" y="25" text-anchor="middle" font-size="14" fill="#92400e" font-weight="bold">📐 حدود الدوال المثلثية</text>
+        <!-- Unit circle representation -->
+        <circle cx="120" cy="130" r="70" fill="none" stroke="#7c3aed" stroke-width="2"/>
+        <line x1="50" y1="130" x2="190" y2="130" stroke="#374151" stroke-width="1"/>
+        <line x1="120" y1="60" x2="120" y2="200" stroke="#374151" stroke-width="1"/>
+        <text x="120" y="135" text-anchor="middle" font-size="10" fill="#374151">0</text>
+        <text x="195" y="135" font-size="10" fill="#374151">1</text>
+        <text x="40" y="135" font-size="10" fill="#374151">-1</text>
+        <text x="120" y="55" text-anchor="middle" font-size="10" fill="#374151">1</text>
+        <text x="120" y="215" text-anchor="middle" font-size="10" fill="#374151">-1</text>
+        <!-- Bounds box -->
+        <rect x="230" y="50" width="200" height="180" rx="6" fill="#fde68a" stroke="#f59e0b" stroke-width="2"/>
+        <text x="330" y="75" text-anchor="middle" font-size="12" fill="#92400e" font-weight="bold">Key Bounds:</text>
+        <text x="330" y="100" text-anchor="middle" font-size="11" fill="#92400e">-1 ≤ sin(θ) ≤ 1</text>
+        <text x="330" y="120" text-anchor="middle" font-size="11" fill="#92400e">-1 ≤ cos(θ) ≤ 1</text>
+        <text x="330" y="145" text-anchor="middle" font-size="11" fill="#92400e">0 ≤ sin²(θ) ≤ 1</text>
+        <text x="330" y="165" text-anchor="middle" font-size="11" fill="#92400e">0 ≤ cos²(θ) ≤ 1</text>
+        <text x="330" y="190" text-anchor="middle" font-size="11" fill="#92400e">0 ≤ |sin(θ)| ≤ 1</text>
+        <text x="330" y="210" text-anchor="middle" font-size="11" fill="#92400e">0 ≤ |cos(θ)| ≤ 1</text>
+        <text x="225" y="245" text-anchor="middle" font-size="10" fill="#92400e">Multiply by positive function to get bounds</text>
+    </svg>`
+};
+
+// ==================== EXAM DATA - 25 QUESTIONS ====================
+const originalExamData = {
+    sections: [
+        {
+            id: 'sec1',
+            title: { ar: '🔹 القسم 1: مفهوم نظرية الشطيرة (Q1-Q5)', en: '🔹 Section 1: Squeeze Theorem Concept (Q1-Q5)' },
+            questions: [
+                {
+                    q: { ar: 'ما نص نظرية الشطيرة (Squeeze Theorem)؟', en: 'What is the Squeeze Theorem statement?' },
+                    svg: svgGraphs.squeeze_theorem_concept,
+                    options: [
+                        { ar: 'إذا f(x) ≤ g(x) ≤ h(x) و lim f = lim h = L، فإن lim g = L', en: 'If f(x) ≤ g(x) ≤ h(x) and lim f = lim h = L, then lim g = L' },
+                        { ar: 'إذا f(x) = g(x) = h(x)، فإن lim g = L', en: 'If f(x) = g(x) = h(x), then lim g = L' },
+                        { ar: 'إذا f(x) ≤ g(x)، فإن lim f ≤ lim g', en: 'If f(x) ≤ g(x), then lim f ≤ lim g' },
+                        { ar: 'إذا g(x) ≤ h(x)، فإن lim g ≤ lim h', en: 'If g(x) ≤ h(x), then lim g ≤ lim h' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'نظرية الشطيرة: إذا f(x) ≤ g(x) ≤ h(x) بالقرب من a، و lim x→a f(x) = lim x→a h(x) = L، فإن lim x→a g(x) = L', en: 'Squeeze Theorem: If f(x) ≤ g(x) ≤ h(x) near a, and lim f = lim h = L, then lim g = L' }
+                },
+                {
+                    q: { ar: 'ما الشرط الأساسي لتطبيق نظرية الشطيرة؟', en: 'What is the essential condition for applying the Squeeze Theorem?' },
+                    options: [
+                        { ar: 'أن تكون نهايتا الدالتين الحادتين متساويتين', en: 'The limits of the bounding functions must be equal' },
+                        { ar: 'أن تكون الدالة متصلة', en: 'The function must be continuous' },
+                        { ar: 'أن تكون الدالة قابلة للاشتقاق', en: 'The function must be differentiable' },
+                        { ar: 'أن تكون الدالة موجبة', en: 'The function must be positive' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'الشرط الأساسي: lim f(x) = lim h(x) = L (نهايتا الدالتين الحادتين متساويتان)', en: 'Essential condition: lim f(x) = lim h(x) = L (limits of bounding functions are equal)' }
+                },
+                {
+                    q: { ar: 'ما حدود دالة sin(θ)؟', en: 'What are the bounds of sin(θ)?' },
+                    svg: svgGraphs.bounds_explanation,
+                    options: [
+                        { ar: '<span class="math-display">-1 ≤ sin(θ) ≤ 1</span>', en: '<span class="math-display">-1 ≤ sin(θ) ≤ 1</span>' },
+                        { ar: '<span class="math-display">0 ≤ sin(θ) ≤ 1</span>', en: '<span class="math-display">0 ≤ sin(θ) ≤ 1</span>' },
+                        { ar: '<span class="math-display">- ≤ sin(θ) ≤ ∞</span>', en: '<span class="math-display">-∞ ≤ sin(θ) ≤ ∞</span>' },
+                        { ar: '<span class="math-display">-1 &lt; sin(θ) &lt; 1</span>', en: '<span class="math-display">-1 &lt; sin(θ) &lt; 1</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: '-1 ≤ sin(θ) ≤ 1 لجميع قيم θ', en: '-1 ≤ sin(θ) ≤ 1 for all θ' }
+                },
+                {
+                    q: { ar: 'ما حدود دالة cos²(θ)؟', en: 'What are the bounds of cos²(θ)?' },
+                    options: [
+                        { ar: '<span class="math-display">0 ≤ cos²(θ) ≤ 1</span>', en: '<span class="math-display">0 ≤ cos²(θ) ≤ 1</span>' },
+                        { ar: '<span class="math-display">-1 ≤ cos²(θ) ≤ 1</span>', en: '<span class="math-display">-1 ≤ cos²(θ) ≤ 1</span>' },
+                        { ar: '<span class="math-display">0 &lt; cos²(θ) &lt; 1</span>', en: '<span class="math-display">0 &lt; cos²(θ) &lt; 1</span>' },
+                        { ar: '<span class="math-display">-1 &lt; cos²(θ) &lt; 1</span>', en: '<span class="math-display">-1 &lt; cos²(θ) &lt; 1</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: '0 ≤ cos²(θ) ≤ 1 (لأن التربيع يجعل القيمة غير سالبة)', en: '0 ≤ cos²(θ) ≤ 1 (squaring makes value non-negative)' }
+                },
+                {
+                    q: { ar: 'متى نستخدم نظرية الشطيرة؟', en: 'When do we use the Squeeze Theorem?' },
+                    options: [
+                        { ar: 'عندما يكون من الصعب حساب النهاية مباشرة', en: 'When it\'s difficult to compute the limit directly' },
+                        { ar: 'دائماً', en: 'Always' },
+                        { ar: 'فقط للدوال المثلثية', en: 'Only for trigonometric functions' },
+                        { ar: 'فقط عندما تكون النهاية صفر', en: 'Only when limit is zero' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'نستخدمها عندما يكون حساب النهاية مباشرة صعباً، لكن يمكننا إيجاد دالتين تحيطان بالدالة', en: 'Used when direct limit calculation is difficult, but we can find bounding functions' }
+                }
+            ]
+        },
+        {
+            id: 'sec2',
+            title: { ar: '🔹 القسم 2: مثال 3.8 - lim[x²cos(1/x)] (Q6-Q10)', en: '🔹 Section 2: Example 3.8 - lim[x²cos(1/x)] (Q6-Q10)' },
+            questions: [
+                {
+                    q: { ar: '<strong>مثال 3.8:</strong> ما الحد الأعلى للدالة <span class="math-display">x²cos(1/x)</span>؟', en: '<strong>Example 3.8:</strong> What is the upper bound for <span class="math-display">x²cos(1/x)</span>?' },
+                    svg: svgGraphs.example_3_8,
+                    options: [
+                        { ar: '<span class="math-display">x²</span>', en: '<span class="math-display">x²</span>' },
+                        { ar: '<span class="math-display">-x²</span>', en: '<span class="math-display">-x²</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: '<span class="math-display">x</span>', en: '<span class="math-display">x</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'بما أن cos(1/x) ≤ 1، فإن x²cos(1/x) ≤ x² (لـ x > 0)', en: 'Since cos(1/x) ≤ 1, x²cos(1/x) ≤ x² (for x > 0)' }
+                },
+                {
+                    q: { ar: 'ما الحد الأدنى للدالة <span class="math-display">x²cos(1/x)</span>؟', en: 'What is the lower bound for <span class="math-display">x²cos(1/x)</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">-x²</span>', en: '<span class="math-display">-x²</span>' },
+                        { ar: '<span class="math-display">x²</span>', en: '<span class="math-display">x²</span>' },
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">-1</span>', en: '<span class="math-display">-1</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'بما أن cos(1/x) ≥ -1، فإن x²cos(1/x) ≥ -x²', en: 'Since cos(1/x) ≥ -1, x²cos(1/x) ≥ -x²' }
+                },
+                {
+                    q: { ar: 'ما قيمة <span class="math-display">lim x→0 x²</span>؟', en: 'What is <span class="math-display">lim x→0 x²</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: '<span class="math-display">∞</span>', en: '<span class="math-display">∞</span>' },
+                        { ar: 'غير معرّفة', en: 'Undefined' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'lim x→0 x² = 0² = 0', en: 'lim x→0 x² = 0² = 0' }
+                },
+                {
+                    q: { ar: 'ما قيمة <span class="math-display">lim x→0 (-x²)</span>؟', en: 'What is <span class="math-display">lim x→0 (-x²)</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">-1</span>', en: '<span class="math-display">-1</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: '<span class="math-display">∞</span>', en: '<span class="math-display">∞</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'lim x→0 (-x²) = -(0²) = 0', en: 'lim x→0 (-x²) = -(0²) = 0' }
+                },
+                {
+                    q: { ar: 'باستخدام نظرية الشطيرة، ما قيمة <span class="math-display">lim x→0 [x²cos(1/x)]</span>؟', en: 'Using Squeeze Theorem, what is <span class="math-display">lim x→0 [x²cos(1/x)]</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: 'غير موجودة', en: 'Does not exist' },
+                        { ar: '<span class="math-display">∞</span>', en: '<span class="math-display">∞</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'بما أن -x² ≤ x²cos(1/x) ≤ x² و lim(-x²) = lim(x²) = 0، فإن lim[x²cos(1/x)] = 0', en: 'Since -x² ≤ x²cos(1/x) ≤ x² and lim(-x²) = lim(x²) = 0, then lim[x²cos(1/x)] = 0' }
+                }
+            ]
+        },
+        {
+            id: 'sec3',
+            title: { ar: '🔹 القسم 3: تمرين 31 - lim[√x·cos²(1/x)] (Q11-Q15)', en: '🔹 Section 3: Exercise 31 - lim[√x·cos²(1/x)] (Q11-Q15)' },
+            questions: [
+                {
+                    q: { ar: '<strong>تمرين 31:</strong> ما الحد الأدنى f(x) للدالة <span class="math-display">√x·cos²(1/x)</span>؟', en: '<strong>Exercise 31:</strong> What is the lower bound f(x) for <span class="math-display">√x·cos²(1/x)</span>?' },
+                    svg: svgGraphs.exercise_31,
+                    options: [
+                        { ar: '<span class="math-display">f(x) = 0</span>', en: '<span class="math-display">f(x) = 0</span>' },
+                        { ar: '<span class="math-display">f(x) = -√x</span>', en: '<span class="math-display">f(x) = -√x</span>' },
+                        { ar: '<span class="math-display">f(x) = x</span>', en: '<span class="math-display">f(x) = √x</span>' },
+                        { ar: '<span class="math-display">f(x) = -1</span>', en: '<span class="math-display">f(x) = -1</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'بما أن cos²(1/x) ≥ 0 و √x ≥ 0 (لـ x > 0)، فإن √x·cos²(1/x) ≥ 0', en: 'Since cos²(1/x) ≥ 0 and √x ≥ 0 (for x > 0), √x·cos²(1/x) ≥ 0' }
+                },
+                {
+                    q: { ar: 'ما الحد الأعلى h(x) للدالة <span class="math-display">√x·cos²(1/x)</span>؟', en: 'What is the upper bound h(x) for <span class="math-display">√x·cos²(1/x)</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">h(x) = x</span>', en: '<span class="math-display">h(x) = √x</span>' },
+                        { ar: '<span class="math-display">h(x) = x</span>', en: '<span class="math-display">h(x) = x</span>' },
+                        { ar: '<span class="math-display">h(x) = 1</span>', en: '<span class="math-display">h(x) = 1</span>' },
+                        { ar: '<span class="math-display">h(x) = x²</span>', en: '<span class="math-display">h(x) = x²</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'بما أن cos²(1/x) ≤ 1، فإن √x·cos²(1/x) ≤ √x·1 = x', en: 'Since cos²(1/x) ≤ 1, √x·cos²(1/x) ≤ √x·1 = x' }
+                },
+                {
+                    q: { ar: 'ما قيمة <span class="math-display">lim x→0⁺ √x</span>؟', en: 'What is <span class="math-display">lim x→0 √x</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: '<span class="math-display">∞</span>', en: '<span class="math-display">∞</span>' },
+                        { ar: 'غير معرّفة', en: 'Undefined' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'lim x→0⁺ √x = √0 = 0', en: 'lim x→0⁺ √x = √0 = 0' }
+                },
+                {
+                    q: { ar: 'لماذا نستخدم lim x→0⁺ (من اليمين فقط) في هذا التمرين؟', en: 'Why do we use lim x→0⁺ (right limit only) in this exercise?' },
+                    options: [
+                        { ar: 'لأن √x غير معرّفة لـ x < 0', en: 'Because x is undefined for x < 0' },
+                        { ar: 'لأن cos²(1/x) غير معرّفة لـ x < 0', en: 'Because cos²(1/x) is undefined for x < 0' },
+                        { ar: 'لا سبب محدد', en: 'No specific reason' },
+                        { ar: 'لأن النهاية من اليسار مختلفة', en: 'Because left limit is different' }
+                    ],
+                    correct: 0,
+                    answer: { ar: '√x معرّفة فقط لـ x ≥ 0، لذا ندرس النهاية من اليمين فقط', en: '√x is defined only for x ≥ 0, so we study right limit only' }
+                },
+                {
+                    q: { ar: 'باستخدام نظرية الشطيرة، ما قيمة <span class="math-display">lim x→0⁺ [√x·cos²(1/x)]</span>؟', en: 'Using Squeeze Theorem, what is <span class="math-display">lim x→0⁺ [√x·cos²(1/x)]</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: '<span class="math-display"></span>', en: '<span class="math-display">∞</span>' },
+                        { ar: 'غير موجودة', en: 'Does not exist' }
+                    ],
+                    correct: 0,
+                    answer: { ar: '0 ≤ √x·cos²(1/x) ≤ √x، و lim 0 = lim √x = 0، إذن lim = 0', en: '0 ≤ √x·cos²(1/x) ≤ √x, and lim 0 = lim √x = 0, so lim = 0' }
+                }
+            ]
+        },
+        {
+            id: 'sec4',
+            title: { ar: '🔹 القسم 4: أسئلة مشابهة (Q16-Q20)', en: '🔹 Section 4: Similar Questions (Q16-Q20)' },
+            questions: [
+                {
+                    q: { ar: 'ما قيمة <span class="math-display">lim x→0 [x·sin(1/x)]</span> باستخدام نظرية الشطيرة؟', en: 'What is <span class="math-display">lim x→0 [x·sin(1/x)]</span> using Squeeze Theorem?' },
+                    svg: svgGraphs.xsin1x,
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: 'غير موجودة', en: 'Does not exist' },
+                        { ar: '<span class="math-display">∞</span>', en: '<span class="math-display"></span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: '-|x| ≤ x·sin(1/x) ≤ |x|، و lim(-|x|) = lim(|x|) = 0، إذن lim = 0', en: '-|x| ≤ x·sin(1/x) ≤ |x|, and lim(-|x|) = lim(|x|) = 0, so lim = 0' }
+                },
+                {
+                    q: { ar: 'ما قيمة <span class="math-display">lim x→0 [x²·sin(1/x)]</span>؟', en: 'What is <span class="math-display">lim x→0 [x²·sin(1/x)]</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: 'غير موجودة', en: 'Does not exist' },
+                        { ar: '<span class="math-display">∞</span>', en: '<span class="math-display"></span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: '-x² ≤ x²·sin(1/x) ≤ x²، و lim(±x²) = 0، إذن lim = 0', en: '-x² ≤ x²·sin(1/x) ≤ x², and lim(±x²) = 0, so lim = 0' }
+                },
+                {
+                    q: { ar: 'ما قيمة <span class="math-display">lim x→0 [x·cos(1/x)]</span>؟', en: 'What is <span class="math-display">lim x→0 [x·cos(1/x)]</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: 'غير موجودة', en: 'Does not exist' },
+                        { ar: '<span class="math-display"></span>', en: '<span class="math-display">∞</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: '-|x| ≤ x·cos(1/x) ≤ |x|، و lim(±|x|) = 0، إذن lim = 0', en: '-|x| ≤ x·cos(1/x) ≤ |x|, and lim(±|x|) = 0, so lim = 0' }
+                },
+                {
+                    q: { ar: 'ما قيمة <span class="math-display">lim x→0 [√|x|·sin(1/x)]</span>؟', en: 'What is <span class="math-display">lim x→0 [√|x|·sin(1/x)]</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: 'غير موجودة', en: 'Does not exist' },
+                        { ar: '<span class="math-display"></span>', en: '<span class="math-display">∞</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: '-√|x| ≤ |x|·sin(1/x) ≤ |x|، و lim(±√|x|) = 0، إذن lim = 0', en: '-√|x| ≤ √|x|·sin(1/x) ≤ √|x|, and lim(±√|x|) = 0, so lim = 0' }
+                },
+                {
+                    q: { ar: 'ما قيمة <span class="math-display">lim x→0 [x³·cos(1/x²)]</span>؟', en: 'What is <span class="math-display">lim x→0 [x³·cos(1/x²)]</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: 'غير موجودة', en: 'Does not exist' },
+                        { ar: '<span class="math-display">∞</span>', en: '<span class="math-display">∞</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: '-|x³| ≤ x³·cos(1/x²) ≤ |x³|، و lim(±|x³|) = 0، إذن lim = 0', en: '-|x³| ≤ x³·cos(1/x²) ≤ |x³|, and lim(±|x³|) = 0, so lim = 0' }
+                }
+            ]
+        },
+        {
+            id: 'sec5',
+            title: { ar: '🔹 القسم 5: مسائل مركبة وتطبيقات (Q21-Q25)', en: '🔹 Section 5: Mixed Problems & Applications (Q21-Q25)' },
+            questions: [
+                {
+                    q: { ar: 'أي من الدوال التالية يمكن تطبيق نظرية الشطيرة عليها عند x→0؟', en: 'Which function can apply Squeeze Theorem at x→0?' },
+                    options: [
+                        { ar: '<span class="math-display">x²·sin(1/x)</span>', en: '<span class="math-display">x²·sin(1/x)</span>' },
+                        { ar: '<span class="math-display">1/x</span>', en: '<span class="math-display">1/x</span>' },
+                        { ar: '<span class="math-display">sin(x)/x</span> عند x=0', en: '<span class="math-display">sin(x)/x</span> at x=0' },
+                        { ar: '<span class="math-display">1/x²</span>', en: '<span class="math-display">1/x²</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'x²·sin(1/x) يمكن تطبيق نظرية الشطيرة لأن -x² ≤ x²·sin(1/x) ≤ x²', en: 'x²·sin(1/x) can apply Squeeze Theorem because -x² ≤ x²·sin(1/x) ≤ x²' }
+                },
+                {
+                    q: { ar: 'ما قيمة <span class="math-display">lim x→0 [x·sin(1/x²)]</span>؟', en: 'What is <span class="math-display">lim x→0 [x·sin(1/x²)]</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: 'غير موجودة', en: 'Does not exist' },
+                        { ar: '<span class="math-display">∞</span>', en: '<span class="math-display">∞</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: '-|x| ≤ x·sin(1/x²) ≤ |x|، و lim(±|x|) = 0، إذن lim = 0', en: '-|x| ≤ x·sin(1/x²) ≤ |x|, and lim(±|x|) = 0, so lim = 0' }
+                },
+                {
+                    q: { ar: 'إذا كانت <span class="math-display">-x⁴ ≤ g(x) ≤ x⁴</span> لجميع x، فما <span class="math-display">lim x→0 g(x)</span>؟', en: 'If <span class="math-display">-x⁴ ≤ g(x) ≤ x⁴</span> for all x, what is <span class="math-display">lim x→0 g(x)</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">1</span>', en: '<span class="math-display">1</span>' },
+                        { ar: 'غير موجودة', en: 'Does not exist' },
+                        { ar: 'لا يمكن التحديد', en: 'Cannot determine' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'lim(-x⁴) = lim(x) = 0، إذن lim g(x) = 0 بنظرية الشطيرة', en: 'lim(-x⁴) = lim(x⁴) = 0, so lim g(x) = 0 by Squeeze Theorem' }
+                },
+                {
+                    q: { ar: 'ما قيمة <span class="math-display">lim x→0 [x²·(2 + sin(1/x))]</span>؟', en: 'What is <span class="math-display">lim x→0 [x²·(2 + sin(1/x))]</span>?' },
+                    options: [
+                        { ar: '<span class="math-display">0</span>', en: '<span class="math-display">0</span>' },
+                        { ar: '<span class="math-display">2</span>', en: '<span class="math-display">2</span>' },
+                        { ar: 'غير موجودة', en: 'Does not exist' },
+                        { ar: '<span class="math-display">∞</span>', en: '<span class="math-display">∞</span>' }
+                    ],
+                    correct: 0,
+                    answer: { ar: '1 ≤ 2+sin(1/x) ≤ 3، إذن x² ≤ x²(2+sin(1/x)) ≤ 3x². lim(x²) = lim(3x²) = 0، إذن lim = 0', en: '1 ≤ 2+sin(1/x) ≤ 3, so x² ≤ x²(2+sin(1/x)) ≤ 3x². lim(x²) = lim(3x²) = 0, so lim = 0' }
+                },
+                {
+                    q: { ar: 'أي عبارة صحيحة عن <span class="math-display">lim x→0 [sin(x)/x]</span>؟', en: 'Which statement is true about <span class="math-display">lim x→0 [sin(x)/x]</span>?' },
+                    options: [
+                        { ar: 'تساوي 1 لكن لا تُحسب بنظرية الشطيرة مباشرة', en: 'Equals 1 but not directly computed by Squeeze Theorem' },
+                        { ar: 'تساوي 0', en: 'Equals 0' },
+                        { ar: 'غير موجودة', en: 'Does not exist' },
+                        { ar: 'تساوي ∞', en: 'Equals ∞' }
+                    ],
+                    correct: 0,
+                    answer: { ar: 'lim x→0 sin(x)/x = 1 (نهاية مشهورة)، لكن تُثبت عادةً بنظرية الشطيرة باستخدام متباينات هندسية', en: 'lim x→0 sin(x)/x = 1 (famous limit), usually proved by Squeeze Theorem using geometric inequalities' }
+                }
+            ]
+        }
+    ]
+};
+
+function shuffleArray(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function prepareShuffledExam() {
+    rng = mulberry32(currentSeed);
+    examData = JSON.parse(JSON.stringify(originalExamData));
+    correctAnswersMap = {};
+    let globalIdx = 0;
+    examData.sections.forEach((section) => {
+        section.questions = shuffleArray(section.questions);
+        section.questions.forEach((q) => {
+            const optionsWithCorrect = q.options.map((opt, idx) => ({ option: opt, isCorrect: idx === q.correct }));
+            const shuffledOptions = shuffleArray(optionsWithCorrect);
+            q.options = shuffledOptions.map(o => o.option);
+            q.correct = shuffledOptions.findIndex(o => o.isCorrect);
+            correctAnswersMap[globalIdx] = String.fromCharCode(97 + q.correct);
+            globalIdx++;
+        });
+    });
+}
+
+function reshuffleExam() {
+    const msg = currentLang === 'ar' ? '🔄 سيتم إنشاء أسئلة جديدة ومسح إجاباتك. هل أنت متأكد؟' : '🔄 New questions will be generated. Are you sure?';
+    if (confirm(msg)) {
+        currentSeed = Date.now(); timeRemaining = TOTAL_TIME; answersVisible = false;
+        prepareShuffledExam(); renderExam(); saveState();
+        alert(currentLang === 'ar' ? '🎲 تم تغيير الأسئلة! حظاً موفقاً! 🍀' : '🎲 Questions changed! Good luck! ');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+function setLanguage(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.body.classList.toggle('en-mode', lang === 'en');
+    renderExam(); saveState(false);
+}
+
+function renderExam() {
+    const container = document.getElementById('exam-content');
+    const labels = { ar: { option: ['أ', 'ب', 'ج', 'د'], answer: '✅ الإجابة:' }, en: { option: ['A', 'B', 'C', 'D'], answer: '✅ Answer:' } };
+    const lbl = labels[currentLang];
+    let html = '';
+    let globalIdx = 0;
+    
+    examData.sections.forEach((section, secIdx) => {
+        const badgeClass = ['module-1', 'module-2', 'module-3', 'module-4', 'module-5'][secIdx];
+        html += '<section class="bg-white p-6 rounded-2xl shadow-lg border-2 border-purple-100">';
+        html += '<div class="text-center mb-4"><span class="module-badge ' + badgeClass + '">' + section.title[currentLang] + '</span></div>';
+        html += '<ol class="space-y-4 text-sm">';
+        
+        section.questions.forEach((q) => {
+            html += '<li class="border-r-4 border-purple-400 pr-4 py-2" id="q-' + globalIdx + '">';
+            html += '<strong class="text-purple-700">' + (globalIdx + 1) + '.</strong> ' + q.q[currentLang] + '<br>';
+            
+            if (q.svg) html += '<div class="graph-container">' + q.svg + '</div>';
+            
+            q.options.forEach((opt, oIdx) => {
+                html += '<label class="cursor-pointer block mt-2 mr-4 hover:bg-purple-50 rounded-lg p-2 transition">';
+                html += '<input type="radio" name="q' + globalIdx + '" value="' + String.fromCharCode(97 + oIdx) + '" class="mr-2 ml-2">';
+                html += '<span class="arabic-math">' + lbl.option[oIdx] + ') ' + opt[currentLang] + '</span>';
+                html += '</label>';
+            });
+            
+            html += '<div class="answer-box text-green-700 mt-3 font-medium ' + (answersVisible ? '' : 'hidden') + ' bg-green-50 rounded-lg p-3 border border-green-200">';
+            html += lbl.answer + ' ' + lbl.option[q.correct] + ') <span class="arabic-math">' + q.options[q.correct][currentLang] + '</span><br>';
+            html += '<span class="text-sm text-green-700 mt-2 block arabic-math">' + q.answer[currentLang] + '</span>';
+            html += '</div></li>';
+            globalIdx++;
+        });
+        
+        html += '</ol></section>';
+    });
+    
+    container.innerHTML = html;
+}
+
+function startTimer() {
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        if (timeRemaining % 60 === 0) saveState(false);
+        if (timeRemaining <= 600) document.getElementById('timer').classList.add('timer-warning');
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            alert(currentLang === 'ar' ? "⏰ انتهى الوقت!" : "⏰ Time's up!");
+            gradeExam();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const m = Math.floor(timeRemaining / 60);
+    const s = timeRemaining % 60;
+    document.getElementById('timer').textContent = m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
+}
+
+function toggleAnswers() {
+    answersVisible = !answersVisible;
+    document.querySelectorAll('.answer-box').forEach(el => el.classList.toggle('hidden', !answersVisible));
+    saveState(false);
+}
+
+function gradeExam() {
+    let correctCount = 0;
+    const sectionScores = new Array(TOTAL_SECTIONS).fill(0);
+    
+    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const sel = document.querySelector('input[name="q'+i+'"]:checked');
+        const li = document.getElementById('q-' + i);
+        if (li) {
+            const isCorrect = sel && sel.value === correctAnswersMap[i];
+            if (isCorrect) {
+                correctCount++;
+                li.classList.add('correct');
+                li.classList.remove('incorrect');
+                sectionScores[Math.floor(i / QUESTIONS_PER_SECTION)]++;
+            } else {
+                li.classList.add('incorrect');
+                li.classList.remove('correct');
+            }
+        }
+    }
+    
+    const score = Math.round((correctCount / TOTAL_QUESTIONS) * 100);
+    document.getElementById('res-total').textContent = score + ' / 100';
+    document.getElementById('res-name').textContent = document.getElementById('studentName').value || (currentLang === 'ar' ? 'بطل' : 'Champion');
+    document.getElementById('res-date').textContent = new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-AE' : 'en-US');
+    
+    const pc = document.getElementById('sections-performance');
+    pc.innerHTML = '';
+    examData.sections.forEach((s, idx) => {
+        pc.innerHTML += '<div class="flex justify-between items-center p-3 bg-white rounded-lg"><span class="text-gray-700">' + s.title[currentLang] + '</span><span class="font-bold text-purple-700">' + sectionScores[idx] + '/' + QUESTIONS_PER_SECTION + '</span></div>';
+    });
+    
+    const badge = document.getElementById('success-badge');
+    document.getElementById('success-percent').textContent = score + '%';
+    
+    if (currentLang === 'ar') {
+        if (score >= 90) { badge.textContent = '🌟 ممتاز جداً!'; badge.className = 'success-badge grade-excellent'; }
+        else if (score >= 75) { badge.textContent = '👏 ممتاز!'; badge.className = 'success-badge grade-good'; }
+        else if (score >= 50) { badge.textContent = '👍 جيد'; badge.className = 'success-badge grade-pass'; }
+        else { badge.textContent = '💪 حاول مرة أخرى'; badge.className = 'success-badge grade-fail'; }
+    } else {
+        if (score >= 90) { badge.textContent = ' Outstanding!'; badge.className = 'success-badge grade-excellent'; }
+        else if (score >= 75) { badge.textContent = '👏 Excellent!'; badge.className = 'success-badge grade-good'; }
+        else if (score >= 50) { badge.textContent = '👍 Good'; badge.className = 'success-badge grade-pass'; }
+        else { badge.textContent = '💪 Try Again'; badge.className = 'success-badge grade-fail'; }
+    }
+    
+    document.getElementById('results-panel').classList.remove('hidden');
+    document.getElementById('results-panel').scrollIntoView({ behavior: 'smooth' });
+    if (timerInterval) clearInterval(timerInterval);
+}
+
+function sendResultsToEmail() {
+    const btn = document.getElementById('sendEmailBtn');
+    const status = document.getElementById('emailStatus');
+    btn.disabled = true;
+    btn.textContent = currentLang === 'ar' ? ' جاري الإرسال...' : '⏳ Sending...';
+    
+    const name = document.getElementById('studentName').value || 'غير محدد';
+    const studentClass = document.getElementById('studentClass').value || 'غير محدد';
+    const date = document.getElementById('examDate').value || new Date().toLocaleDateString();
+    const score = document.getElementById('res-total').textContent;
+    const successRate = document.getElementById('success-percent').textContent;
+    const badge = document.getElementById('success-badge').textContent;
+    
+    let questionsHTML = '<table style="width:100%; border-collapse: collapse; font-family: Arial; font-size: 12px; direction: rtl;">';
+    questionsHTML += '<thead><tr style="background:#7c3aed; color:white;"><th style="padding:8px; border:1px solid #ddd;">#</th><th style="padding:8px; border:1px solid #ddd;">' + (currentLang === 'ar' ? 'السؤال' : 'Question') + '</th><th style="padding:8px; border:1px solid #ddd;">' + (currentLang === 'ar' ? 'إجابة الطالب' : 'Student Answer') + '</th><th style="padding:8px; border:1px solid #ddd;">' + (currentLang === 'ar' ? 'الصحيحة' : 'Correct') + '</th><th style="padding:8px; border:1px solid #ddd;">' + (currentLang === 'ar' ? 'النتيجة' : 'Result') + '</th></tr></thead><tbody>';
+    
+    let globalIdx = 0;
+    examData.sections.forEach((section) => {
+        questionsHTML += '<tr style="background:#ede9fe;"><td colspan="5" style="padding:8px; font-weight:bold; border:1px solid #ddd;">' + section.title.ar + '</td></tr>';
+        section.questions.forEach((q) => {
+            const sel = document.querySelector('input[name="q'+globalIdx+'"]:checked');
+            const sv = sel ? sel.value : null;
+            const cv = correctAnswersMap[globalIdx];
+            const ic = sv === cv;
+            let sat = currentLang === 'ar' ? '❌ لم يجب' : '❌ No answer';
+            let sac = '#dc2626';
+            if (sv) {
+                const si = sv.charCodeAt(0) - 97;
+                sat = q.options[si].ar;
+                sac = ic ? '#16a34a' : '#dc2626';
+            }
+            const cat = q.options[q.correct].ar;
+            const rb = ic ? '#f0fdf4' : '#fef2f2';
+            questionsHTML += '<tr style="background:' + rb + ';"><td style="padding:8px; border:1px solid #ddd; text-align:center;">' + (globalIdx+1) + '</td><td style="padding:8px; border:1px solid #ddd;">' + q.q.ar + '</td><td style="padding:8px; border:1px solid #ddd; color:' + sac + ';">' + sat + '</td><td style="padding:8px; border:1px solid #ddd; color:#16a34a;">' + cat + '</td><td style="padding:8px; border:1px solid #ddd; text-align:center;">' + (ic?'✅':'❌') + '</td></tr>';
+            globalIdx++;
+        });
+    });
+    questionsHTML += '</tbody></table>';
+    
+    const templateParams = {
+        to_email: TARGET_EMAIL,
+        student_name: name,
+        student_class: studentClass,
+        exam_date: date,
+        total_score: score,
+        success_rate: successRate,
+        grade: badge,
+        answers_table: questionsHTML
+    };
+    
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
+        .then(() => {
+            status.textContent = currentLang === 'ar' ? '✅ تم الإرسال بنجاح!' : '✅ Sent successfully!';
+            status.style.color = '#16a34a';
+            btn.textContent = currentLang === 'ar' ? '✓ تم' : '✓ Sent';
+            alert(currentLang === 'ar' ? 'تم إرسال النتيجة للمعلم بنجاح!' : 'Result sent to teacher successfully!');
+        })
+        .catch((error) => {
+            status.textContent = currentLang === 'ar' ? '❌ فشل الإرسال' : '❌ Failed to send';
+            status.style.color = '#dc2626';
+            btn.disabled = false;
+            btn.textContent = currentLang === 'ar' ? '📧 حاول مرة أخرى' : '📧 Try Again';
+            alert(currentLang === 'ar' ? 'فشل الإرسال: ' + error.text : 'Failed: ' + error.text);
+        });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    const saved = loadState();
+    if (saved && saved.seed) {
+        currentSeed = saved.seed;
+        currentLang = saved.lang || 'ar';
+        timeRemaining = saved.timeRemaining !== undefined ? saved.timeRemaining : TOTAL_TIME;
+        answersVisible = saved.answersVisible || false;
+        document.getElementById('btn-ar').classList.toggle('active', currentLang === 'ar');
+        document.getElementById('btn-en').classList.toggle('active', currentLang === 'en');
+        document.body.classList.toggle('en-mode', currentLang === 'en');
+    } else {
+        currentSeed = Date.now();
+    }
+    prepareShuffledExam();
+    renderExam();
+    if (saved) {
+        if (saved.studentName) document.getElementById('studentName').value = saved.studentName;
+        if (saved.studentClass) document.getElementById('studentClass').value = saved.studentClass;
+        if (saved.examDate) document.getElementById('examDate').value = saved.examDate;
+        if (saved.answers) restoreAnswers(saved.answers);
+    }
+    setupAnswerListeners();
+    setupInputListeners();
+    startTimer();
+});
+window.addEventListener('beforeunload', () => saveState(false));
+</script>
+</body>
+</html>
